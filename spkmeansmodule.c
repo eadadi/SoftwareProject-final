@@ -63,7 +63,7 @@ void putPythonParsedArgsIntoVars(PyObject *args, double *** v, int *n, int*dim) 
 	*v = *(ptr0);
 	*n = *(ptr1);
 	*dim = *(ptr2);
-	free(arr);
+	free(parsedArr);
 }
 
 //3.	Python Objects to C Objects Transformations
@@ -78,7 +78,7 @@ static PyObject* c_wam(PyObject *self, PyObject *args){
 	//calculate Weighted Adjacency Matrix
 	double **WAM = calcWAM(c_vectors, n, vectorDimension);
 
-	//define returnedWAM Python Object
+	//define returned WAM Python Object
 	PyObject* pyWAM = PyList_New(n);
 	for (i=0; i<n;++i){
 		double *row = WAM[i];
@@ -98,7 +98,34 @@ static PyObject* c_wam(PyObject *self, PyObject *args){
 }
 
 static PyObject* c_ddg(PyObject *self, PyObject *args) {
-	return Py_BuildValue("i",-1);
+	//Parse Python Args
+	int n, vectorDimension;
+	double **c_vectors;
+	Py_ssize_t i, j;
+	putPythonParsedArgsIntoVars(args, &c_vectors, &n, &vectorDimension);
+
+	//calculate Weighted Adjacency Matrix
+	double **WAM = calcWAM(c_vectors, n, vectorDimension);
+	//calculate Diagonal Degree Matrix
+	double **DDG = calcDDG(WAM, n);
+
+	//define returned DDG Python Object
+	PyObject* pyDDG = PyList_New(n);
+	for (i = 0; i < n; ++i) {
+		double *row = DDG[i];
+		PyObject *py_row = PyList_New(n);
+		for (j = 0; j < n; ++j) {
+			PyObject *value;
+			value = Py_BuildValue("d", row[j]);
+			PyList_SetItem(py_row, j, value);
+		}
+		PyList_SetItem(pyDDG, i, py_row);
+	}
+
+	//free c_vectors, WAM, DDG
+	for (int i = 0; i < n; ++i) { free(c_vectors[i]); free(WAM[i]); free(DDG[i]); }
+	free(c_vectors); free(WAM); free(DDG);
+	return pyDDG;
 }
 
 static PyObject* c_jacobi(PyObject *self, PyObject *args){

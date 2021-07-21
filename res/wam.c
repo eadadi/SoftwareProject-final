@@ -15,7 +15,7 @@ double ** calcWAM (double ** vectors, int n, int vectorDimension){
 	for (int i = 0; i < n; ++i) {
 		for (int j = i; j < n; ++j) {
 			if (j == i) Matrice[i][j] = 0;
-			else Matrice[i][j] = Matrice[j][i] =
+			else Matrice[i][j] = Matrice[j][i] = 
 				exp(-distance(vectors[i], vectors[j], d));
 		}
 	}
