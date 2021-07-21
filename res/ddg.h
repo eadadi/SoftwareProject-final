@@ -1,0 +1,1 @@
+double **calcDDG(double **, int);

@@ -25,30 +25,55 @@ static PyObject* c_lnorm(PyObject *, PyObject *);
 static PyObject* c_spk(PyObject *, PyObject *);
 static PyObject* c_wam(PyObject *, PyObject *);*/
 
-//3.	Python Objects to C Objects Transformations
-
-static PyObject* c_wam(PyObject *self, PyObject *args){
+//3.0 Parse the Python Vectors to C Vectors:
+void ** parsePythonArgs(PyObject *args) {
 	int n, vectorDimension;
 	PyObject *vectors;
 	double** c_vectors;
-	Py_ssize_t i,j;
-
+	Py_ssize_t i, j;
+	void **arr = (void*)calloc(3, sizeof(void *));
 	PyArg_ParseTuple(args, "Oii", &vectors, &n, &vectorDimension);
-	
+
 	//define c_vectors arg
-	c_vectors = (double**)calloc(n,sizeof(double*));
-	for (i=0; i<vectorDimension; ++i) 
-	c_vectors[i] = (double*)calloc(vectorDimension,sizeof(double));
+	c_vectors = (double**)calloc(n, sizeof(double*));
+	for (i = 0; i < vectorDimension; ++i)
+		c_vectors[i] = (double*)calloc(vectorDimension, sizeof(double));
 
 	//build c_vectors arg
-	
-	for (i=0; i<n; ++i) {
+
+	for (i = 0; i < n; ++i) {
 		PyObject *u = PyList_GetItem(vectors, i);
-		for (j=0;j<vectorDimension;++j) {
+		for (j = 0; j < vectorDimension; ++j) {
 			PyObject *value = PyList_GetItem(u, j);
 			PyArg_Parse(value, "d", &c_vectors[i][j]);
 		}
 	}
+	arr[0] = &c_vectors; arr[1] = &n, arr[2] = &vectorDimension;
+	return arr;
+}
+void putPythonParsedArgsIntoVars(PyObject *args, double *** v, int *n, int*dim) {
+	int *ptr1, *ptr2;
+	double ***ptr0;
+
+	void **parsedArr = parsePythonArgs(args);
+
+	ptr0 = parsedArr[0];
+	ptr1 = parsedArr[1];
+	ptr2 = parsedArr[2];
+	*v = *(ptr0);
+	*n = *(ptr1);
+	*dim = *(ptr2);
+	free(arr);
+}
+
+//3.	Python Objects to C Objects Transformations
+static PyObject* c_wam(PyObject *self, PyObject *args){
+
+	//Parse Python Args
+	int n, vectorDimension;
+	double **c_vectors;
+	Py_ssize_t i, j;
+	putPythonParsedArgsIntoVars(args, &c_vectors, &n, &vectorDimension);
 
 	//calculate Weighted Adjacency Matrix
 	double **WAM = calcWAM(c_vectors, n, vectorDimension);
