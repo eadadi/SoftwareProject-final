@@ -163,7 +163,60 @@ static PyObject* c_lnorm(PyObject *self, PyObject *args){
 }
 
 static PyObject* c_jacobi(PyObject *self, PyObject *args) {
-	return Py_BuildValue("i", -1);
+	//Parse Python Args
+	int n, vectorDimension;
+	double **c_vectors;
+	Py_ssize_t i, j;
+	putPythonParsedArgsIntoVars(args, &c_vectors, &n, &vectorDimension);
+
+	//calculate Weighted Adjacency Matrix
+	double **WAM = calcWAM(c_vectors, n, vectorDimension);
+	//calculate Diagonal Degree Matrix
+	double **DDG = calcDDG(WAM, n);
+	//calculate Normalized Graph Laplacian
+	double **NGL = calcNGL(WAM, DDG, n);
+	//do Jacobian Proccess
+	double ***JACOBI = calcJacobi(NGL, n);
+	double *eigenvalues = *JACOBI[0];
+	double **eigenvectors = JACOBI[1];
+
+	//define returned (eigenvalues,eigenvectors) Python Object
+	PyObject* pyEIGENS = PyDict_New();
+	//build python eigenvalues
+	PyObject *py_eigenvalues = PyList_New(n);
+	for (i = 0; i < n; ++i) {
+		PyObject *value;
+		value = Py_BuildValue("d", eigenvalues[i]);
+		PyList_SetItem(py_eigenvalues, i, value);
+	}
+	PyObject *key1 = Py_BuildValue("s", "eigenvalues");
+	PyDict_SetItem(pyEIGENS, key1, py_eigenvalues);
+
+	//build python eigenvectors
+	PyObject *py_eigenvectors = PyList_New(n);
+	for (i = 0; i < n; ++i) {
+		double *row = eigenvectors[i];
+		PyObject *py_row = PyList_New(n);
+		for (j = 0; j < n; ++j) {
+			PyObject *value;
+			value = Py_BuildValue("d", row[j]);
+			PyList_SetItem(py_row, j, value);
+		}
+		PyList_SetItem(py_eigenvectors, i, py_row);
+	}
+	PyObject *key2 = Py_BuildValue("s", "eigenvectors");
+	PyDict_SetItem(pyEIGENS, key2, py_eigenvectors);
+
+	//free c_vectors, WAM,, DDG, NGL
+	for (int i = 0; i < n; ++i)
+	{
+		free(c_vectors[i]); free(WAM[i]); free(DDG[i]); free(NGL[i]); 
+		free(JACOBI[1][i]);
+	}
+	free(c_vectors); free(WAM); free(DDG); free(NGL); free(JACOBI[0][0]);
+	free(JACOBI[1]); free(JACOBI);
+
+	return pyEIGENS;
 }
 
 static PyObject* c_spk(PyObject *self, PyObject *args){
