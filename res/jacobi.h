@@ -4,4 +4,4 @@ int* getPivotIndexes(double **, int);
 double* calcCandS(double **, int, int);
 double ** MatriceMultiplication(double **, double **, int);
 double ** calcAtag(double **, int, int, int, double, double);
-int isDiagonalEnough(double **A, double **, int);
+int isDiagonalEnough(double **, double **, int);

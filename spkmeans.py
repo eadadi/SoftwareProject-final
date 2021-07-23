@@ -14,7 +14,7 @@ class goalEnum (enum.Enum):
     spk = "spk"
 
 #methods:
-def input():
+def getInput():
     args = sys.argv
     assert(len(args)==4)
     k,goal,file_name = (args[1],args[2],args[3])
@@ -28,7 +28,7 @@ def input():
 def main():
     np.random.seed(0)
     try:
-        k, goal, file_name = input()
+        k, goal, file_name = getInput()
         data = pd.read_csv(file_name, sep=",", header=None).to_numpy().tolist()
         n = len (data)
         d = len(data[0]) 

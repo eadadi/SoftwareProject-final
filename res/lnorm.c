@@ -27,11 +27,19 @@ double ** right_multip_of_diagonal_matrice(double ** M, double **D, int n) {
 	return result;
 }
 double ** calcNGL(double ** W, double ** D, int n) { // Normalized Graph Laplacian
+	double ** result;
 	double ** Dtag = raise_D_diagonal_in_minus_half(D, n);
-	double ** result = left_multip_of_diagonal_matrice(Dtag, W, n);
-	result = right_multip_of_diagonal_matrice(result, Dtag, n);
-	for (int i = 0; i < n; ++i) result[i][i] = 1 - result[i][i];
-	for (int i = 0; i < n; ++i) free(Dtag[i]);
-	free(Dtag);
+	double ** tmp = left_multip_of_diagonal_matrice(Dtag, W, n);
+	result = right_multip_of_diagonal_matrice(tmp, Dtag, n);
+	for (int i = 0; i < n; ++i) 
+		for (int j = 0; j < n; ++j)
+			if (i == j) result[i][i] = 1 - result[i][i];
+			else result[i][j] = -result[i][j];
+	
+	for (int i = 0; i < n; ++i) {
+		free(Dtag[i]); free(tmp[i]); \
+	}
+	free(Dtag); free(tmp);
+	
 	return result;
 }

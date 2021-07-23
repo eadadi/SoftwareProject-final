@@ -10,7 +10,6 @@ double **calcDDG(double ** M, int n) {
 		double dii = 0;
 		for (int j = 0; j < n; ++j) {
 			dii += M[i][j];
-			Matrice[i][j] = 0;
 		}
 		Matrice[i][i] = dii;
 	}
