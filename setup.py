@@ -1,7 +1,9 @@
 from platform import version
 from setuptools import setup, Extension
 
-added_sources = ['res\ddg.c','res\jacobi.c','res\lnorm.c','res\spk.c','res\wam.c']
+added_sources = ['res/wam.c','res/ddg.c','res/lnorm.c','res/jacobi.c']
+added_sources += ['res/spk.c','res/fit.c']
+added_sources += ['res/eigenpap.c','res/tools.c']
 toload = ['spkmeansmodule.c'] + added_sources
 setup(name = 'spkmeansm',
 version='1.0',
