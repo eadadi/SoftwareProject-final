@@ -1,9 +1,8 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-
+#include "res/value_vector_map_struct.h
 #include"res/tools.c"
-#include "res/value_vector_map_struct.h"
 #include "spkmeans.h"
 #include "res/wam.c"
 #include "res/ddg.c"
@@ -12,35 +11,6 @@
 #include "res/eigenpap.c"
 #include "res/spk.c"
 #include "res/fit.c"
-/*
-static double distance(double *, double *, int);
-static double **calcWAM(double **, int, int);
-static double **calcDDG(double ** M, int n);
-static double ** raise_D_diagonal_in_minus_half(double **D, int n);
-static double ** left_multip_of_diagonal_matrice(double ** D, double **M, int n);
-static double ** right_multip_of_diagonal_matrice(double ** M, double **D, int n);
-static double ** calcNGL(double ** W, double ** D, int n);
-#define EPSILON 0.001
-#define JACOBI_MAX_ITERATIONS_NUMBER 100
-static double*** calcJacobi(double **A, int n);
-static double ** buildPij(double **M, int n, int i, int j, double c, double s);
-static int* getPivotIndexes(double ** M, int n);
-static double* calcCandS(double **M, int i, int j);
-static double ** MatriceMultiplication(double ** A, double **B, int n);
-static double ** calcAtag(double ** A, int n, int i, int j, double c, double s);
-static int isDiagonalEnough(double **A, double **B, int n);
-static int cmpfunc(const void *a, const void *b);
-static void sortMap(value_vector_map *map, int n);
-static int determineK(value_vector_map *map, int n);
-static double ** calcNormalaizedRnk(value_vector_map *map, int n, int clustersNumber);
-static int* k_mean(double **datapoints, double **centroids, int datapoints_amount,
-	int clusters_amount, int datapoint_length, int max_iter);
-static int getClosestCluster(double *candidate, double**centroids, int clusters_amount,
-	int datapoint_length);
-static int updateCentroids(double **datapoints, double **centroids,
-	int datapoints_amount, int clusters_amount, int *data_to_centroids_map, int datapoint_length);
-static void add_u_to_v(double *u, double *v, int dim);
-*/
 
 
 static int EasyArgParse(PyObject *args, double ***Vectors, int *num_of_vectors, int *vectorDim, int *k_argument) {

@@ -1,8 +1,12 @@
 #include <stdlib.h>
 #include "tools.c"
 
+#ifndef JACOBI_CONSTANTSS
 #define EPSILON 0.001
 #define JACOBI_MAX_ITERATIONS_NUMBER 100
+#endif // !JACOBI_CONSTANTSS
+
+
 static int* getPivotIndexes(double ** M, int n) {
 	int i, j, k, l, *result;
 	double max, tmp;
