@@ -27,10 +27,6 @@ static void printArr(double ** A, int n, int m) {
 			printf("%lf", A[i][j]);
 			j + 1 == m ? printf("\n") : printf(",");
 		}
-		if (m == 0) {
-			printf("%lf", *A[i]);
-			i + 1 == n ? printf("\n") : printf(",");
-		}
 	}
 }
 #endif

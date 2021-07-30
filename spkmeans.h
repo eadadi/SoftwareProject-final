@@ -1,6 +1,8 @@
 #ifndef SPKMEANS_H
 #define SPKMEANS_H
-
+/*
+-------------spkmeans.c  headers:
+*/
 /*
 -------------spkmeansmodule.c sources:
 */
