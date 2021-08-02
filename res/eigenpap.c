@@ -27,7 +27,7 @@ static int determineK(value_vector_map *map, int n) {
 			k = i;
 		}
 	}
-	return k;
+	return k+1;
 }
 static value_vector_map* setMap(double ** eigenvectors, double * eigenvalues, int n) {
 	int i;

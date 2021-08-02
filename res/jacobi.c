@@ -4,7 +4,7 @@
 #ifndef JACOBI_CONSTANTSS
 #define EPSILON 0.001
 #define JACOBI_MAX_ITERATIONS_NUMBER 100
-#endif // !JACOBI_CONSTANTSS
+#endif 
 
 
 static int* getPivotIndexes(double ** M, int n) {
@@ -121,7 +121,9 @@ static double*** calcJacobi(double **A, int n) {
 		free(pivotIndexes); free(params);
 
 		offAtag = offAcopy;
-		Atag = calcAtag(Acopy, n, i, j, c, s, &offAtag); //calcAtag returns the Acopy ptr (it updates Acopy)
+
+		/* calcAtag returns the Acopy ptr (it updates Acopy) */
+		Atag = calcAtag(Acopy, n, i, j, c, s, &offAtag); 
 
 		if (Atag == NULL) return NULL;
 		if (offAcopy - offAtag <= EPSILON) flag = 0;

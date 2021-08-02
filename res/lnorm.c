@@ -43,7 +43,8 @@ static double ** right_multip_of_diagonal_matrice(double ** M, double **D, int n
 	}
 	return result;
 }
-static double ** calcNGL(double ** W, double ** D, int n) { // Normalized Graph Laplacian
+/* Normalized Graph Laplacian */
+static double ** calcNGL(double ** W, double ** D, int n) { 
 	int i, j;
 	double ** result, **Dtag, **tmp;
 	Dtag = raise_D_diagonal_in_minus_half(D, n);

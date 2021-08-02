@@ -2,9 +2,11 @@
 #define TOOLS_C
 #include <stdio.h>
 static double distance(double *v, double *u, int vectorDimension) {
-	int d = vectorDimension;
-	double distance = 0;
-	for (d; d > 0; --d) distance += pow((v[d - 1] - u[d - 1]), 2);
+	int d;
+	double distance;
+	d = vectorDimension;
+	distance = 0;
+	for (; d > 0; --d) distance += pow((v[d - 1] - u[d - 1]), 2);
 	return pow(distance, 0.5);
 }
 
@@ -24,7 +26,7 @@ static void printArr(double ** A, int n, int m) {
 	int i, j;
 	for (i = 0; i < n; ++i) {
 		for (j = 0; j < m; ++j) {
-			printf("%lf", A[i][j]);
+			printf("%.4f", A[i][j]);
 			j + 1 == m ? printf("\n") : printf(",");
 		}
 	}

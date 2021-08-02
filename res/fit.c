@@ -27,17 +27,17 @@ static int updateCentroids(double **datapoints, double **centroids,
 	flag = 0;
 	for (i = 0; i < clusters_amount; ++i) {
 		for (j = 0; j < datapoint_length; ++j) {
-			new_centroids[i][j] /= amounts[i];
+			if(amounts[i] > 0) new_centroids[i][j] /= amounts[i];
 			if (new_centroids[i][j] != centroids[i][j]) {
 				centroids[i][j] = new_centroids[i][j];
 				flag = 1;
 			}
 		}
 	}
-	//free new_centroids
+	/* free new_centroids */
 	for (i = 0; i < clusters_amount; ++i) free(new_centroids[i]);
 	free(new_centroids);
-	//free amounts
+	/* free amounts */
 	free(amounts);
 	return flag;
 }

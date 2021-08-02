@@ -1,7 +1,7 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#include "res/value_vector_map_struct.h
+#include "res/value_vector_map_struct.h"
 #include"res/tools.c"
 #include "spkmeans.h"
 #include "res/wam.c"
@@ -288,7 +288,7 @@ static PyObject* c_spk(PyObject *self, PyObject *args) {
 	Py_ssize_t i, j, _n, _clusterNumber;
 	double **vectors, **WAM, **DDG, **NGL,
 		***JACOBI, *eigenvalues, **eigenvectors, **RNK;
-	value_vector_map *map;
+	value_vector_map *vvmap;
 	vectors = NULL;
 
 	if (EasyArgParse(args, &vectors, &n, &vectorDimension, &clustersNumber) == 0) return NULL;
@@ -317,13 +317,13 @@ static PyObject* c_spk(PyObject *self, PyObject *args) {
 	eigenvalues = JACOBI[0][0];
 	eigenvectors = JACOBI[1];
 
-	map = setMap(eigenvectors, eigenvalues, n);
-	if (map == NULL) return NULL;
+	vvmap = setMap(eigenvectors, eigenvalues, n);
+	if (vvmap == NULL) return NULL;
 
-	if (clustersNumber == 0) clustersNumber = determineK(map, n);
+	if (clustersNumber == 0) clustersNumber = determineK(vvmap, n);
 	_clusterNumber = PyLong_AsSize_t(Py_BuildValue("l", clustersNumber));
 
-	RNK = calcNormalaizedRnk(map, n, clustersNumber);
+	RNK = calcNormalaizedRnk(vvmap, n, clustersNumber);
 	if (RNK == NULL) return NULL;
 	
 	//Parsing to Python
@@ -345,7 +345,7 @@ static PyObject* c_spk(PyObject *self, PyObject *args) {
 	for (k = 0; k < n; ++k) free(RNK[k]);
 	free(RNK);
 	//Freeing value_vector_map
-	free(map);
+	free(vvmap);
 	//Freeing JACOBI[0]
 	free(JACOBI[0][0]); free(JACOBI[0]);
 	//Freeing JACOBI[1]
@@ -358,14 +358,12 @@ static PyObject* c_spk(PyObject *self, PyObject *args) {
 	return _RNK;
 }
 static PyObject* c_kmeans(PyObject *self, PyObject *args) {
-	int succ;
-	int datapoints_amount, clusters_amount, datapoint_length, max_iter;
+	int datapoints_amount, clusters_amount, datapoint_length, max_iter, succ, *map;
 	PyObject *_MAP, *_number;
 	double **datapoints, **centroids;
 	succ = kmeans_EasyArgParse(args, &datapoints, &centroids, &datapoints_amount,
 		&clusters_amount, &datapoint_length, &max_iter);
 	Py_ssize_t i, k, _clustersAmount, _datapointsAmount, _datapointLength;
-	int *map;
 	if (succ == 0) return NULL;
 	
 	_datapointsAmount = PyLong_AsSize_t(Py_BuildValue("n",datapoints_amount));

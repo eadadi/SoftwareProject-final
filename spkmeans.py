@@ -4,6 +4,7 @@ import enum
 import numpy as np
 import pandas as pd
 import spkmeans as sp
+import matplotlib.pyplot as plt
 
 #"goal" enum:
 class goalEnum (enum.Enum):
@@ -25,7 +26,7 @@ def getInput():
 
 #kmeanspp logic:
 def build_probabilities (D):
-    probabilities = [None] * len(D)
+    probabilities = [0] * len(D)
     s = sum(D)
     for i in range(len(D)):
         probabilities[i] = D[i] /s
@@ -53,8 +54,8 @@ def first_selection(datapoints, selected_indexes):
 
 def kmeanspp(datapoints, number_of_clusters):
     k = number_of_clusters
-    initial_centroids = [None]*k
-    selected_indexes = [None]*k
+    initial_centroids = [0]*k
+    selected_indexes = [0]*k
     initial_centroids[0] = first_selection(datapoints, selected_indexes)
     Z = 1
     while Z < k:
@@ -87,6 +88,7 @@ def main():
     np.random.seed(0)
     try:
         k, goal, file_name = getInput()
+        pd_data = pd.read_csv(file_name, sep=",", header=None)
         data = pd.read_csv(file_name, sep=",", header=None).to_numpy().tolist()
         n = len (data)
         d = len(data[0])
@@ -109,12 +111,31 @@ def main():
     except ValueError:
         print("Invalid Input!")
         return
-    except:
-        print("An Error Has Occured")
-        return
+    #except:
+    #    print("An Error Has Occured")
+    #    return
     else:
-        print(result)
-   
+        if goal ==goalEnum.spk:
+            a = [str(y) for y in result['initial_centroids_indexes']]
+            b = result['final_centroids']
+            print(','.join(a))
+            for x in b:
+                x0 = ['%.4f'%y for y in x]
+                print(','.join(x0))
+        else:
+            for x in result:
+                x0 = ['%.4f'%y for y in x]
+                print(','.join(x0))
+        #print(pd_data)
+        #fig = plt.figure()
+        #ax = fig.add_subplot(projection='3d')
+        #ax.scatter(pd_data[0],pd_data[1],pd_data[2])
+
+        #c = pd.DataFrame(result['final_centroids'])
+        #print(pd_data)
+        #plt.scatter(pd_data[0],pd_data[1])
+        #plt.scatter(c[0],c[1], color='red', alpha=0.5, marker ="x")
+        #plt.show()
 
 
 #RUN:

@@ -45,7 +45,7 @@ static double ** calcNGL(double ** W, double ** D, int n);
 #ifndef JACOBI_CONSTANTSS
 #define EPSILON 0.001
 #define JACOBI_MAX_ITERATIONS_NUMBER 100
-#endif // !JACOBI_CONSTANTSS
+#endif
 static int* getPivotIndexes(double ** M, int n);
 static double* calcCandS(double **M, int i, int j);
 static double ** calcAtag(double ** A, int n, int i, int j, double c, double s, double *offAtag);

@@ -9,7 +9,7 @@ static double **calcDDG(double ** M, int n) {
 		if (Matrice[i] == NULL) return NULL;
 	}
 
-	for (int i = 0; i < n; ++i) {
+	for (i = 0; i < n; ++i) {
 		dii = 0;
 		for (j = 0; j < n; ++j) {
 			dii += M[i][j];
