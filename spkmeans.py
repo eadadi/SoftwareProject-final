@@ -25,12 +25,12 @@ def getInput():
     return(k,goal,file_name)
 
 #kmeanspp logic:
-def build_probabilities (D):
-    probabilities = [0] * len(D)
+def build_probabilities (D, p):
     s = sum(D)
     for i in range(len(D)):
-        probabilities[i] = D[i] /s
-    return probabilities
+        if s!=0:
+            p[i] = D[i] /s
+    return p
 
 def squared_distance (u, v):
     res = 0
@@ -58,13 +58,14 @@ def kmeanspp(datapoints, number_of_clusters):
     selected_indexes = [0]*k
     initial_centroids[0] = first_selection(datapoints, selected_indexes)
     Z = 1
+    D = [[0] for el in range(len(datapoints))]
+    probabilities = [0] * len(D)
     while Z < k:
-        D = [[0] for el in range(len(datapoints))]
         for i in range(len(datapoints)):
-            xi = np.copy(datapoints[i])
+            xi = datapoints[i]
             D[i] = computeDi (datapoints, xi, Z, initial_centroids)
-        probabilities = build_probabilities(D)
-        j = np.random.choice(len(datapoints), p = probabilities)
+        build_probabilities(D, probabilities)
+        j = np.random.choice(range(0,len(datapoints)), p = probabilities)
         selected_indexes[Z] = j
         initial_centroids[Z] = np.copy(datapoints[j])
         Z += 1
@@ -80,7 +81,8 @@ def calcCentroidsBasedOnMap (data, Map, clustersNumber):
         amounts[Map[i]] += 1
     for i in range(clustersNumber):
         for j in range(len(data[0])):
-            sums[i][j] /= amounts[i]
+            if amounts[i]!=0:
+                sums[i][j] /= amounts[i]
     return sums
 
 #main method:
@@ -126,16 +128,7 @@ def main():
             for x in result:
                 x0 = ['%.4f'%y for y in x]
                 print(','.join(x0))
-        #print(pd_data)
-        #fig = plt.figure()
-        #ax = fig.add_subplot(projection='3d')
-        #ax.scatter(pd_data[0],pd_data[1],pd_data[2])
 
-        #c = pd.DataFrame(result['final_centroids'])
-        #print(pd_data)
-        #plt.scatter(pd_data[0],pd_data[1])
-        #plt.scatter(c[0],c[1], color='red', alpha=0.5, marker ="x")
-        #plt.show()
 
 
 #RUN:

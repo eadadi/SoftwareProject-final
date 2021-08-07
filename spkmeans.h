@@ -1,8 +1,6 @@
 #ifndef SPKMEANS_H
 #define SPKMEANS_H
-/*
--------------spkmeans.c  headers:
-*/
+
 /*
 -------------spkmeansmodule.c sources:
 */
@@ -22,6 +20,7 @@ static void printArr(double ** A, int n, int m);
 typedef struct value_vector_map {
 	double **eigenvector;
 	double *eigenvalue;
+	int index;
 }value_vector_map;
 #endif
 
@@ -34,7 +33,7 @@ static double **calcDDG(double ** M, int n);
 /*
 -----lnorm.c headers
 */
-static double ** raise_D_diagonal_in_minus_half(double **D, int n);
+static void raise_D_diagonal_in_minus_half(double **D, int n);
 static double ** left_multip_of_diagonal_matrice(double ** D, double **M, int n);
 static double ** right_multip_of_diagonal_matrice(double ** M, double **D, int n);
 static double ** calcNGL(double ** W, double ** D, int n);
@@ -42,13 +41,22 @@ static double ** calcNGL(double ** W, double ** D, int n);
 /*
 -----jacobi.c headers
 */
-#ifndef JACOBI_CONSTANTSS
+#ifndef JACOBI_CONSTANTS
+#define JACOBI_CONSTANTS
 #define EPSILON 0.001
 #define JACOBI_MAX_ITERATIONS_NUMBER 100
-#endif
+#define HEAP_MEM 2
+typedef struct matrice_max_heap {
+	double * values;
+	int **mat_to_values;
+	int *values_to_mat;
+}matrice_max_heap;
+#endif 
+
 static int* getPivotIndexes(double ** M, int n);
 static double* calcCandS(double **M, int i, int j);
-static double ** calcAtag(double ** A, int n, int i, int j, double c, double s, double *offAtag);
+static double ** calcAtag(double ** A, int n, int i, int j, double c, 
+	double s, double *offAtag, matrice_max_heap *h);
 static void update_V_by_Pij(double ** V, int n, int i, int j, double c, double s);
 static double calcOffA(double ** A, int n);
 static double*** calcJacobi(double **A, int n);
@@ -77,5 +85,26 @@ static int* k_mean(double **datapoints, double **centroids, int datapoints_amoun
 static double ** calcNormalaizedRnk(value_vector_map *map, int n, int clustersNumber);
 
 
+/*
+-------------spkmeans.c  headers:
+*/
+double **extractCentroids(double **data, int k);
+double ** calcFinalCentroids(double **data, int *map, int k, int data_length, int data_dim);
+
+#ifndef C_ENUM_GOAL
+#define C_ENUM_GOAL
+enum goal { wam, ddg, lnorm, jacobi, spk };
+#endif
+
+char* __goal(enum goal e);
+int cmpstr(char * a, char *b);
+int lenstr(char * a);
+void copyAtoB(char *A, char *B);
+int freadline(char **a, FILE *f);
+int countCommas(char *a);
+double *commaSplit(char *line, int features);
+int getdata(FILE *f, double ***data, int *features_num);
+int getgoal(enum goal* e, char *candidate);
+int input(int argc, char*argv[], int *k, enum goal* e, double *** data, int *data_len, int *features_number);
 
 #endif

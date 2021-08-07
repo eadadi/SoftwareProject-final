@@ -1,18 +1,170 @@
 #include <stdlib.h>
 #include "tools.c"
+#include <float.h>
+#include "matrice_max_heap.h"
 
-#ifndef JACOBI_CONSTANTSS
-#define EPSILON 0.001
-#define JACOBI_MAX_ITERATIONS_NUMBER 100
-#endif 
+static int parent_loc(int i) {
+	int l;
+	l = i / 2;
+	return l;
+}
+static double parent(matrice_max_heap *h, int i) {
+	int l;
+	l = parent_loc(i);
+	return h->values[l];
+}
+static int left_loc(int i) {
+	int l;
+	l = 2 * i;
+	return l;
+}
+static double left(matrice_max_heap *h, int i) {
+	int l;
+	l = left_loc(i);
+	return h->values[l];
+}
+static int right_loc(int i) {
+	int l;
+	l = 2 * i + 1;
+	return l;
+}
+static double right(matrice_max_heap *h, int i) {
+	int l;
+	l = right_loc(i);
+	return h->values[l];
+}
+static double key(matrice_max_heap *h, int i) {
+	return h->values[i];
+}
+static void set_key(matrice_max_heap *h, int i, double k) {
+	h->values[i] = k;
+}
+static void set_indexes(matrice_max_heap *h, int index, int i, int j) {
+	h->values_to_mat[index * HEAP_MEM] = i;
+	h->values_to_mat[index * HEAP_MEM + 1] = j;
+}
+static int heap_len(matrice_max_heap *h) {
+	return h->values_to_mat[0];
+}
+static void interswitch(matrice_max_heap *h, int i, int j) {
+	int j_ind0, j_ind1, i_ind0, i_ind1, tmp;
+	double j_k, i_k;
+	j_k = key(h, j);
+	j_ind0 = h->values_to_mat[HEAP_MEM * j];
+	j_ind1 = h->values_to_mat[HEAP_MEM * j + 1];
 
+	i_k = key(h, i);
+	i_ind0 = h->values_to_mat[HEAP_MEM * i];
+	i_ind1 = h->values_to_mat[HEAP_MEM * i + 1];
+
+	tmp = h->mat_to_values[j_ind0][j_ind1];
+	h->mat_to_values[j_ind0][j_ind1] = h->mat_to_values[i_ind0][i_ind1];
+	h->mat_to_values[i_ind0][i_ind1] = tmp;
+
+	set_key(h, j, i_k);
+	set_indexes(h, j, i_ind0, i_ind1);
+	set_key(h, i, j_k);
+	set_indexes(h, i, j_ind0, j_ind1);
+}
+static void heapify_down(matrice_max_heap *h, int i) {
+	int l, r, max;
+	l = left_loc(i);
+	r = right_loc(i);
+	max = i;
+	if (l<heap_len(h) && left(h,i)>key(h, max))
+		max = l;
+	if (r<heap_len(h) && right(h,i)>key(h, max))
+		max = r;
+	if (max > i) {
+		interswitch(h, i, max);
+		heapify_down(h, max);
+	}
+}
+static void heapify_up(matrice_max_heap *h, int i) {
+	while (i > 1 && key(h, i) > parent(h, i)) {
+		interswitch(h, i, parent_loc(i));
+		i = parent_loc(i);
+	}
+}
+static void heapify(matrice_max_heap *h) {
+	int i, l;
+	l = heap_len(h);
+	for (i = l-1; i >= 1; --i) {
+		heapify_down(h, i);
+	}
+}
+
+/*[i, j] where max value obtained in a_ij*/
+static int* heap_max(matrice_max_heap *h) { 
+	int * result, i, j;
+	result = (int*)malloc(2 * sizeof(int));
+	
+	i = h->values_to_mat[1 * HEAP_MEM];
+	j = h->values_to_mat[1 * HEAP_MEM + 1];
+	result[0] = i;
+	result[1] = j;
+
+	return result;
+}
+
+static void update_key(matrice_max_heap *h, int _ind, double v) {
+	if (fabs(v) > key(h, _ind)) {
+		set_key(h, _ind, fabs(v));
+		heapify_up(h, _ind);
+	}
+	else if (fabs(v) < key(h, _ind)) {
+		set_key(h, _ind, fabs(v));
+		heapify_down(h, _ind);
+	}
+	/*printf("AFTER:\n");
+	printArr(&h->values, 1, h->values[0]);*/
+}
+/*return -1 on failure*/
+static int init_max_heap_from_matrice(matrice_max_heap *h, double **mat,
+	int **heap_locations_map, int n) {
+	int i, j, k, m;
+	m = pow(n, 2) - n + 1;
+	h->values = (double*)malloc(m * sizeof(double));
+	if (h->values == NULL) return -1;
+	h->values_to_mat = (int*)malloc(m * HEAP_MEM * sizeof(int));
+	if (h->values_to_mat == NULL) return -1;
+
+	h->mat_to_values = heap_locations_map;
+	h->values[0] = -1; 
+	h->values_to_mat[0] = m;
+	h->values_to_mat[1] = -1;
+	k = 1;
+	for (i = 0; i < n; ++i) {
+		for (j = 0; j < n; ++j) {
+			if (i == j)continue;
+			h->values[k] = fabs(mat[i][j]);
+			h->values_to_mat[k * HEAP_MEM] = i;
+			h->values_to_mat[k * HEAP_MEM + 1] = j;
+			heap_locations_map[i][j] = k;
+			++k;
+		}
+	}
+	heapify(h);
+
+	
+	return 0;
+}
+
+static void free_heap(matrice_max_heap *h, int mat_dim) {
+	int i;
+	free(h->values);
+	free(h->values_to_mat);
+	for (i = 0; i < mat_dim; ++i) free(h->mat_to_values[i]);
+	free(h->mat_to_values);
+}
 
 static int* getPivotIndexes(double ** M, int n) {
 	int i, j, k, l, *result;
 	double max, tmp;
 	result = (int*)calloc(2, sizeof(int));
 	if (result == NULL) return NULL;
-	max = 0;
+	max = fabs(M[0][1]);
+	i = 0; j = 1;
 	for (k = 0; k < n; ++k)
 		for (l = 0; l < n; ++l) {
 			if (l == k) continue;
@@ -39,25 +191,40 @@ static double* calcCandS(double **M, int i, int j) {
 	result[0] = c; result[1] = s;
 	return result;
 }
-static double ** calcAtag(double ** A, int n, int i, int j, double c, double s, double *offAtag) {
-	double c2, s2, aii, ajj, aij, ari, arj, **Atag;
+static double ** calcAtag(double ** A, int n, int i, int j, 
+	double c, double s, double *offAtag, matrice_max_heap *h) {
+	double c2, s2, aii, ajj, aij, ari, arj, **Atag, v1, v2;
 	int r;
 	Atag = A;
 	c2 = pow(c, 2), s2 = pow(s, 2), aii = A[i][i], ajj = A[j][j], aij = A[i][j];
 	for (r = 0; r < n; ++r) {
+		if (r == i || r == j) continue;
 		ari = A[r][i];
 		arj = A[r][j];
 		*offAtag -= 2 * pow(ari, 2);
 		*offAtag -= 2 * pow(arj, 2);
-		Atag[r][i] = Atag[i][r] = c * ari - s * arj;
-		Atag[r][j] = Atag[j][r] = c * arj + s * ari;
-		*offAtag += 2 * pow(Atag[r][i], 2);
-		*offAtag += 2 * pow(Atag[r][j], 2);
+		v1 = c * ari - s * arj;
+		v2 = c * arj + s * ari;
+		Atag[r][i] = Atag[i][r] = v1;
+		Atag[r][j] = Atag[j][r] = v2;
+		/*heapifing*/
+		update_key(h, h->mat_to_values[i][r], v1);
+		update_key(h, h->mat_to_values[r][i], v1);
+		update_key(h, h->mat_to_values[j][r], v2);
+		update_key(h, h->mat_to_values[r][j], v2);
+		
+		*offAtag += 2 * pow(v1, 2);
+		*offAtag += 2 * pow(v2, 2);
 	}
 	Atag[i][i] = c2 * aii + s2 * ajj - 2 * s*c*aij;
 	Atag[j][j] = s2 * aii + c2 * ajj + 2 * s*c*aij;
 	*offAtag -= 2 * pow(aij, 2);
 	Atag[i][j] = Atag[j][i] = 0;
+	
+	/*heapifing*/
+	update_key(h, h->mat_to_values[i][j], 0);
+	update_key(h, h->mat_to_values[j][i], 0);
+
 	return Atag;
 }
 static void update_V_by_Pij(double ** V, int n, int i, int j, double c, double s) {
@@ -74,17 +241,25 @@ static double calcOffA(double ** A, int n) {
 	int i, j;
 	double offA = 0;
 	for (i = 0; i < n; ++i) {
-		for (j = i+1; j < n; ++j) {
-			offA += 2 * pow(A[i][j], 2);
+		for (j = 0; j < n; ++j) {
+			if (i == j) continue;
+			offA += pow(A[i][j], 2);
 		}
 	}
 	return offA;
 }
 static double*** calcJacobi(double **A, int n) {
-	double **Atag, **V, **Acopy, ***result;
+	double **Atag, **V, ***result;
 	int iter, i, j, *pivotIndexes, flag;
 	double c, s, *params, *eigenvalues, **eigenvaluesHolder;
-	double offAcopy, offAtag;
+	double offA, offAtag;
+	matrice_max_heap h;/**/
+	int *max;
+	int **heap_locations;
+	heap_locations = (int**)malloc(n * sizeof(int*));
+	for (i = 0; i < n; ++i) heap_locations[i] = (int*)malloc(n * sizeof(int));
+
+
 	eigenvalues = (double*)calloc(n, sizeof(double));
 	if (eigenvalues == NULL) return NULL;
 	eigenvaluesHolder = (double**)calloc(1, sizeof(double*));
@@ -93,49 +268,57 @@ static double*** calcJacobi(double **A, int n) {
 	if (result == NULL) return NULL;
 
 	iter = 0;
-	Acopy = (double**)calloc(n, sizeof(double*));
 	V = (double**)calloc(n, sizeof(double*));
-	if (Acopy == NULL || V == NULL) return NULL;
+	if (V == NULL) return NULL;
 	for (i = 0; i < n; ++i) {
-		Acopy[i] = (double*)calloc(n, sizeof(double));
-		if (Acopy[i] == NULL) return NULL;
 		V[i] = (double*)calloc(n, sizeof(double));
 		if (V[i] == NULL) return NULL;
 	}
 	for (i = 0; i < n; ++i) {
 		V[i][i] = 1;
-		for (j = 0; j < n; ++j) {
-			Acopy[i][j] = A[i][j];
-		}
 	}
-
-	offAcopy = calcOffA(Acopy, n);
+	init_max_heap_from_matrice(&h, A,heap_locations, n);
+	offA = calcOffA(A, n);
 	flag = 1;
-	while (flag && iter++ < JACOBI_MAX_ITERATIONS_NUMBER) {
-		pivotIndexes = getPivotIndexes(Acopy, n);
+	
+	while (flag==1 && iter++ < JACOBI_MAX_ITERATIONS_NUMBER) {
+		pivotIndexes = getPivotIndexes(A, n);
 		if (pivotIndexes == NULL) return NULL;
 		i = pivotIndexes[0]; j = pivotIndexes[1];
-		params = calcCandS(Acopy, i, j);
+		params = calcCandS(A, i, j);
 		if (params == NULL) return NULL;
 		c = params[0]; s = params[1];
-		free(pivotIndexes); free(params);
 
-		offAtag = offAcopy;
+		max = heap_max(&h);
+		/*
+		printf("i=%d, j=%d, heap_i=%d, heap_j=%d\n", 
+			i, j, max[0], max[1]);
+		printf("a[i][j]=%f, a[h_i][h_j]=%f\n", Acopy[i][j], Acopy[max[0]][max[1]]);
+		printArr(&h.values, 1, heap_len(&h));
+		printf("\n");*/
+		free(pivotIndexes); free(params);		
+		free(max);
 
-		/* calcAtag returns the Acopy ptr (it updates Acopy) */
-		Atag = calcAtag(Acopy, n, i, j, c, s, &offAtag); 
+
+		offAtag = offA;
+
+		/* calcAtag returns the A ptr (it updates A) */
+		Atag = calcAtag(A, n, i, j, c, s, &offAtag, &h); 
+		/*printArr(A, n, n);*//**/
 
 		if (Atag == NULL) return NULL;
-		if (offAcopy - offAtag <= EPSILON) flag = 0;
+		if (offA - offAtag <= EPSILON) flag = 0;
 		update_V_by_Pij(V, n, i, j, c, s);
-		Acopy = Atag;
-		offAcopy = offAtag;
+		A = Atag;
+
+
+		offA = offAtag;
 	}
+	free_heap(&h, n);
 
 	for (i = 0; i < n; ++i) {
-		eigenvalues[i] = Acopy[i][i];
-		free(Acopy[i]);
-	}free(Acopy);
+		eigenvalues[i] = A[i][i];
+	}
 	
 	Transpoze(V, n);
 

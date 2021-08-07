@@ -63,3 +63,4 @@ dkms.conf
 *.swp
 *.un~
 *.un~
+.spkmeans.py.un~

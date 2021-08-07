@@ -2,11 +2,10 @@
 #define TOOLS_C
 #include <stdio.h>
 static double distance(double *v, double *u, int vectorDimension) {
-	int d;
+	int i;
 	double distance;
-	d = vectorDimension;
 	distance = 0;
-	for (; d > 0; --d) distance += pow((v[d - 1] - u[d - 1]), 2);
+	for (i=0; i<vectorDimension; ++i) distance += pow((v[i] - u[i]), 2);
 	return pow(distance, 0.5);
 }
 

@@ -50,7 +50,7 @@ static int getClosestCluster(double *candidate, double**centroids, int clusters_
 	index = 0;
 	for (i = 1; i < clusters_amount; ++i) {
 		tmp = distance(candidate, centroids[i], datapoint_length);
-		if (tmp < min) {
+		if (tmp <= min) {
 			min = tmp;
 			index = i;
 		}
@@ -71,7 +71,8 @@ static int* k_mean(double **datapoints, double **centroids, int datapoints_amoun
 		}
 		flag = updateCentroids(datapoints, centroids,
 			datapoints_amount, clusters_amount, data_to_centroids_map, datapoint_length);
-		if (flag == -1) return NULL;
+
 	}
+	if (flag == -1) return NULL;
 	return data_to_centroids_map;
 }
