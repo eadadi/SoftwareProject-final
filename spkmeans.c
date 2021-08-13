@@ -164,6 +164,7 @@ double ** calcFinalCentroids(double **data, int *map, int k, int data_length, in
 	for (i = 0; i < data_length; ++i) {
 		for (j = 0; j < data_dim; ++j) {
 			sums[map[i]][j] += data[i][j];
+			/*sums[map[i]][j] += data[i][j];*/
 		}
 		amounts[map[i]] += 1;
 	}

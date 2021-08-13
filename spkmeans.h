@@ -43,9 +43,12 @@ static double ** calcNGL(double ** W, double ** D, int n);
 */
 #ifndef JACOBI_CONSTANTS
 #define JACOBI_CONSTANTS
-#define EPSILON 0.001
-#define JACOBI_MAX_ITERATIONS_NUMBER 100
+#define EPSILON 0.0001
+#define JACOBI_MAX_ITERATIONS_NUMBER 10000
 #define HEAP_MEM 2
+#endif 
+#ifndef MATRICE_MAX_HEAP
+#define MATRICE_MAX_HEAP
 typedef struct matrice_max_heap {
 	double * values;
 	int **mat_to_values;
@@ -53,8 +56,8 @@ typedef struct matrice_max_heap {
 }matrice_max_heap;
 #endif 
 
-static int* getPivotIndexes(double ** M, int n);
-static double* calcCandS(double **M, int i, int j);
+static void getPivotIndexes(double ** M, int n, int[2]);
+static void calcCandS(double **M, int i, int j, double[2]);
 static double ** calcAtag(double ** A, int n, int i, int j, double c, 
 	double s, double *offAtag, matrice_max_heap *h);
 static void update_V_by_Pij(double ** V, int n, int i, int j, double c, double s);

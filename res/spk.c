@@ -30,7 +30,7 @@ static double ** calcNormalaizedRnk(value_vector_map *map, int n, int clustersNu
 			if (dist != 0) Rnk[i][j] /= dist;
 		}
 	}
-
+	/**/
 	free(zero);
 	return Rnk;
 }

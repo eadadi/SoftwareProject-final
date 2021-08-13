@@ -1,8 +1,5 @@
-#ifndef JACOBI_CONSTANTS
-#define JACOBI_CONSTANTS
-#define EPSILON 0.001
-#define JACOBI_MAX_ITERATIONS_NUMBER 100
-#define HEAP_MEM 2
+#ifndef MATRICE_MAX_HEAP
+#define MATRICE_MAX_HEAP
 typedef struct matrice_max_heap {
 	double * values;
 	int **mat_to_values;

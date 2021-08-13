@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "tools.c"
 #include <float.h>
+#include "..\spkmeans.h"
 #include "matrice_max_heap.h"
 
 static int parent_loc(int i) {
@@ -116,8 +117,6 @@ static void update_key(matrice_max_heap *h, int _ind, double v) {
 		set_key(h, _ind, fabs(v));
 		heapify_down(h, _ind);
 	}
-	/*printf("AFTER:\n");
-	printArr(&h->values, 1, h->values[0]);*/
 }
 /*return -1 on failure*/
 static int init_max_heap_from_matrice(matrice_max_heap *h, double **mat,
@@ -158,11 +157,9 @@ static void free_heap(matrice_max_heap *h, int mat_dim) {
 	free(h->mat_to_values);
 }
 
-static int* getPivotIndexes(double ** M, int n) {
-	int i, j, k, l, *result;
+static void getPivotIndexes(double ** M, int n, int result[2]) {
+	int i, j, k, l;
 	double max, tmp;
-	result = (int*)calloc(2, sizeof(int));
-	if (result == NULL) return NULL;
 	max = fabs(M[0][1]);
 	i = 0; j = 1;
 	for (k = 0; k < n; ++k)
@@ -175,13 +172,10 @@ static int* getPivotIndexes(double ** M, int n) {
 			}
 		}
 	result[0] = i; result[1] = j;
-	return result;
 }
-static double* calcCandS(double **M, int i, int j) {
-	double theta, t, c, s, *result;
+static void calcCandS(double **M, int i, int j, double result[2]) {
+	double theta, t, c, s;
 	int thetaSign;
-	result = (double*)calloc(2, sizeof(double));
-	if (result == NULL) return NULL;
 	theta = (M[j][j] - M[i][i]) / (2 * M[i][j]);
 	if (theta >= 0) thetaSign = 1;
 	else thetaSign = -1;
@@ -189,7 +183,6 @@ static double* calcCandS(double **M, int i, int j) {
 	c = 1 / pow(pow(t, 2) + 1, 0.5);
 	s = t * c;
 	result[0] = c; result[1] = s;
-	return result;
 }
 static double ** calcAtag(double ** A, int n, int i, int j, 
 	double c, double s, double *offAtag, matrice_max_heap *h) {
@@ -250,12 +243,13 @@ static double calcOffA(double ** A, int n) {
 }
 static double*** calcJacobi(double **A, int n) {
 	double **Atag, **V, ***result;
-	int iter, i, j, *pivotIndexes, flag;
-	double c, s, *params, *eigenvalues, **eigenvaluesHolder;
+	int iter, i, j, pivotIndexes[2], flag;
+	double c, s, params[2], *eigenvalues, **eigenvaluesHolder;
 	double offA, offAtag;
 	matrice_max_heap h;/**/
 	int *max;
 	int **heap_locations;
+
 	heap_locations = (int**)malloc(n * sizeof(int*));
 	for (i = 0; i < n; ++i) heap_locations[i] = (int*)malloc(n * sizeof(int));
 
@@ -282,33 +276,23 @@ static double*** calcJacobi(double **A, int n) {
 	flag = 1;
 	
 	while (flag==1 && iter++ < JACOBI_MAX_ITERATIONS_NUMBER) {
-		pivotIndexes = getPivotIndexes(A, n);
-		if (pivotIndexes == NULL) return NULL;
+		 getPivotIndexes(A, n, pivotIndexes);
 		i = pivotIndexes[0]; j = pivotIndexes[1];
-		params = calcCandS(A, i, j);
-		if (params == NULL) return NULL;
+		calcCandS(A, i, j, params);
 		c = params[0]; s = params[1];
-
 		max = heap_max(&h);
-		/*
-		printf("i=%d, j=%d, heap_i=%d, heap_j=%d\n", 
-			i, j, max[0], max[1]);
-		printf("a[i][j]=%f, a[h_i][h_j]=%f\n", Acopy[i][j], Acopy[max[0]][max[1]]);
-		printArr(&h.values, 1, heap_len(&h));
-		printf("\n");*/
-		free(pivotIndexes); free(params);		
-		free(max);
 
+		free(max);
 
 		offAtag = offA;
 
 		/* calcAtag returns the A ptr (it updates A) */
 		Atag = calcAtag(A, n, i, j, c, s, &offAtag, &h); 
-		/*printArr(A, n, n);*//**/
 
-		if (Atag == NULL) return NULL;
 		if (offA - offAtag <= EPSILON) flag = 0;
+
 		update_V_by_Pij(V, n, i, j, c, s);
+
 		A = Atag;
 
 
@@ -324,5 +308,6 @@ static double*** calcJacobi(double **A, int n) {
 
 	eigenvaluesHolder[0] = eigenvalues;
 	result[0] = eigenvaluesHolder; result[1] = V;
+
 	return result;
 }

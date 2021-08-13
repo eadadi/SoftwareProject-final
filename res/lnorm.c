@@ -6,10 +6,10 @@ static void raise_D_diagonal_in_minus_half(double **D, int n) {
 static double ** left_multip_of_diagonal_matrice(double ** D, double **M, int n) {
 	int i, j;
 	double **result;
-	result = (double**)calloc(n, sizeof(double*));
+	result = (double**)malloc(n * sizeof(double*));
 	if (result == NULL) return NULL;
 	for (i = 0; i < n; ++i) {
-		result[i] = (double*)calloc(n, sizeof(double));
+		result[i] = (double*)malloc (n * sizeof(double));
 		if (result[i] == NULL) return NULL;
 	}
 	for (i = 0; i < n; ++i) {
@@ -22,10 +22,10 @@ static double ** left_multip_of_diagonal_matrice(double ** D, double **M, int n)
 static double ** right_multip_of_diagonal_matrice(double ** M, double **D, int n) {
 	int i, j;
 	double **result;
-	result = (double**)calloc(n, sizeof(double*));
+	result = (double**)malloc(n * sizeof(double*));
 	if (result == NULL) return NULL;
 	for (i = 0; i < n; ++i) {
-		result[i] = (double*)calloc(n, sizeof(double));
+		result[i] = (double*)malloc(n * sizeof(double));
 		if (result[i] == NULL) return NULL;
 	}
 	for (i = 0; i < n; ++i) {

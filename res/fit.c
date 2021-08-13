@@ -35,8 +35,11 @@ static int updateCentroids(double **datapoints, double **centroids,
 		}
 	}
 	/* free new_centroids */
+
+
 	for (i = 0; i < clusters_amount; ++i) free(new_centroids[i]);
 	free(new_centroids);
+
 	/* free amounts */
 	free(amounts);
 	return flag;
@@ -73,6 +76,8 @@ static int* k_mean(double **datapoints, double **centroids, int datapoints_amoun
 			datapoints_amount, clusters_amount, data_to_centroids_map, datapoint_length);
 
 	}
-	if (flag == -1) return NULL;
+	if (flag == -1) {
+		return NULL;
+	}
 	return data_to_centroids_map;
 }

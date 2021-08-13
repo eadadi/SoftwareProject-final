@@ -38,13 +38,9 @@ def squared_distance (u, v):
         res += (u[i]-v[i])**2
     return res
 
-def computeDi (data, xi, Z, centroids):
-    Di = squared_distance(xi, centroids[0])
-    for j in range(1,Z):
-        uj = centroids[j]
-        d = squared_distance(xi, uj)
-        Di = min(d,Di)
-    return Di
+def updateDi (datapoints, i, Z, centroids, D):
+    tmp = squared_distance(datapoints[i], centroids[Z-1])
+    D[i] = min(D[i], tmp)
 
 def first_selection(datapoints, selected_indexes):
     index = np.random.choice(len(datapoints))
@@ -54,16 +50,17 @@ def first_selection(datapoints, selected_indexes):
 
 def kmeanspp(datapoints, number_of_clusters):
     k = number_of_clusters
+    #print("k is "+str(k))
     initial_centroids = [0]*k
     selected_indexes = [0]*k
     initial_centroids[0] = first_selection(datapoints, selected_indexes)
     Z = 1
-    D = [[0] for el in range(len(datapoints))]
+    D = [squared_distance(datapoints[i],initial_centroids[0]) for i in range(len(datapoints))]
     probabilities = [0] * len(D)
     while Z < k:
+        #print("iteration "+str(Z)+"...")
         for i in range(len(datapoints)):
-            xi = datapoints[i]
-            D[i] = computeDi (datapoints, xi, Z, initial_centroids)
+            updateDi (datapoints, i, Z, initial_centroids, D)
         build_probabilities(D, probabilities)
         j = np.random.choice(range(0,len(datapoints)), p = probabilities)
         selected_indexes[Z] = j
@@ -72,13 +69,13 @@ def kmeanspp(datapoints, number_of_clusters):
     return (selected_indexes, [array.tolist() for array in initial_centroids])
 
 #calculate actual centers based on the map: vector_i belongs to cluster_j
-def calcCentroidsBasedOnMap (data, Map, clustersNumber):
+def calcCentroidsBasedOnMap (data, data_to_clusters_map, clustersNumber):
     sums = [[0]*len(data[0]) for i in range(clustersNumber)] 
     amounts = [0]*clustersNumber
     for i in range(len(data)):
         for j in range(len(data[0])):
-            sums[Map[i]][j] += data[i][j]
-        amounts[Map[i]] += 1
+            sums[data_to_clusters_map[i]][j] += data[i][j]
+        amounts[data_to_clusters_map[i]] += 1
     for i in range(clustersNumber):
         for j in range(len(data[0])):
             if amounts[i]!=0:
@@ -103,11 +100,13 @@ def main():
         elif goal == goalEnum.jacobi:
             result = sp.jacobi(data, n, d, k)
         elif goal == goalEnum.spk:
-            Rnk = sp.spk(data, n, d, k)
+            Rnk,Rnk_to_Data = sp.spk(data, n, d, k)
             numpyData = np.array(Rnk)
             clustersNumber = len(Rnk[0])
+            #print("strting choose initials...")
             initial_indexes,initial_vectors = kmeanspp(numpyData,clustersNumber)
-            vectors_to_clusters_map = sp.kmeans(Rnk , initial_vectors, 300)
+            #print("going back to c....")
+            vectors_to_clusters_map = sp.kmeans(Rnk , initial_vectors, 1000)
             result = calcCentroidsBasedOnMap(data, vectors_to_clusters_map, clustersNumber) 
             result = {'initial_centroids_indexes':initial_indexes, 'final_centroids':result}
     except ValueError:

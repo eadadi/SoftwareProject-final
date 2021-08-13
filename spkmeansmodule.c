@@ -11,7 +11,9 @@
 #include "res/eigenpap.c"
 #include "res/spk.c"
 #include "res/fit.c"
+/*
 
+*/
 
 static int EasyArgParse(PyObject *args, double ***Vectors, int *num_of_vectors, int *vectorDim, int *k_argument) {
 	int n, vectorDimension, k, l;
@@ -284,7 +286,7 @@ static PyObject* c_jacobi(PyObject *self, PyObject *args) {
 }
 static PyObject* c_spk(PyObject *self, PyObject *args) {
 	int n, vectorDimension, k, clustersNumber;
-	PyObject *_number, *_RNK, *_RNKrow;
+	PyObject *_number, *_RNK, *_RNKrow, *_vvmap;
 	Py_ssize_t i, j, _n, _clusterNumber;
 	double **vectors, **WAM, **DDG, **NGL,
 		***JACOBI, *eigenvalues, **eigenvectors, **RNK;
@@ -326,7 +328,7 @@ static PyObject* c_spk(PyObject *self, PyObject *args) {
 	RNK = calcNormalaizedRnk(vvmap, n, clustersNumber);
 	if (RNK == NULL) return NULL;
 	
-	//Parsing to Python
+	//Parsing RNK to Python
 	_RNK = PyList_New(_n);
 	if (!PyList_Check(_RNK)) return NULL;
 	for (i = 0; i < _n; ++i) {
@@ -340,7 +342,14 @@ static PyObject* c_spk(PyObject *self, PyObject *args) {
 		if (PyList_SetItem(_RNK, i, _RNKrow) == -1) return NULL;
 	}
 
-
+	//Parsing vvmap (indexes only) to Python
+	_vvmap = PyList_New(_n);
+	if (!PyList_Check(_RNK)) return NULL;
+	for (i = 0; i < _n; ++i) {
+		_number = Py_BuildValue("i", vvmap[i].index);
+		if (!_number) return NULL;
+		if (PyList_SetItem(_vvmap, i, _number) == -1) return NULL;
+	}
 	//Freeing NormalaizedRnk
 	for (k = 0; k < n; ++k) free(RNK[k]);
 	free(RNK);
@@ -355,7 +364,9 @@ static PyObject* c_spk(PyObject *self, PyObject *args) {
 	for (k = 0; k < n; ++k) free(NGL[k]);
 	free(NGL);
 	
-	return _RNK;
+	//Create (RNK,vvmap) Tuple:
+	//return _RNK;
+	return Py_BuildValue("(OO)", _RNK, _vvmap);
 }
 static PyObject* c_kmeans(PyObject *self, PyObject *args) {
 	int datapoints_amount, clusters_amount, datapoint_length, max_iter, succ, *map;

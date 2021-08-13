@@ -25,7 +25,7 @@ static int determineK(value_vector_map *map, int n) {
 
 	N = n / 2;
 	max = 0;
-	k = i = 1;
+	k = i = 0;
 	for (; i <= N; ++i) {
 		lambda_i = *(map[i].eigenvalue);
 		lambda_ipp = *(map[i + 1].eigenvalue);
@@ -34,9 +34,9 @@ static int determineK(value_vector_map *map, int n) {
 			k = i;
 			max = delta_i;
 		}
-		else if (delta_i == max && k < map[i].index) k = map[i].index;
 	}
-	return k;
+
+	return k+1;
 }
 static value_vector_map* setMap(double ** eigenvectors, double * eigenvalues, int n) {
 	int i;
