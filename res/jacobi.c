@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "tools.c"
 #include <float.h>
-#include "..\spkmeans.h"
+#include "../spkmeans.h"
 #include "matrice_max_heap.h"
 
 static int parent_loc(int i) {
