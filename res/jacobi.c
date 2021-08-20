@@ -122,7 +122,7 @@ static void update_key(matrice_max_heap *h, int _ind, double v) {
 static int init_max_heap_from_matrice(matrice_max_heap *h, double **mat,
 	int **heap_locations_map, int n) {
 	int i, j, k, m;
-	m = pow(n, 2) - n + 1;
+	m = (int) pow(n, 2) - n + 1;
 	h->values = (double*)malloc(m * sizeof(double));
 	if (h->values == NULL) return -1;
 	h->values_to_mat = (int*)malloc(m * HEAP_MEM * sizeof(int));

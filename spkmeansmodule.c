@@ -57,12 +57,12 @@ static int kmeans_EasyArgParse(PyObject *args, double ***Datapoints, double ***C
 	if (!PyList_Check(_Datapoints)) return 0;
 	if (!PyList_Check(_Centroids)) return 0;
 	_datapoints_amount = PyList_Size(_Datapoints);
-	*datapoints_amount = _datapoints_amount;
+	*datapoints_amount = (int) _datapoints_amount;
 	_clustersAmount = PyList_Size(_Centroids);
-	*clusters_amount = _clustersAmount;
+	*clusters_amount = (int) _clustersAmount;
 	_vector = PyList_GetItem(_Datapoints, 0);
 	_vectorDim = PyList_Size(_vector);
-	*datapoint_length = _vectorDim;
+	*datapoint_length = (int) _vectorDim;
 
 
 	/*

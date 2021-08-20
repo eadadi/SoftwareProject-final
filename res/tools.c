@@ -30,4 +30,6 @@ static void printArr(double ** A, int n, int m) {
 		}
 	}
 }
+
+
 #endif

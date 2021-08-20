@@ -1,0 +1,17 @@
+running build_ext
+building 'spkmeans' extension
+creating build
+creating build/temp.linux-x86_64-3.7
+creating build/temp.linux-x86_64-3.7/res
+gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -fPIC -I/usr/local/lib/python3.7.1/include/python3.7m -c spkmeansmodule.c -o build/temp.linux-x86_64-3.7/spkmeansmodule.o
+gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -fPIC -I/usr/local/lib/python3.7.1/include/python3.7m -c res/wam.c -o build/temp.linux-x86_64-3.7/res/wam.o
+gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -fPIC -I/usr/local/lib/python3.7.1/include/python3.7m -c res/ddg.c -o build/temp.linux-x86_64-3.7/res/ddg.o
+gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -fPIC -I/usr/local/lib/python3.7.1/include/python3.7m -c res/lnorm.c -o build/temp.linux-x86_64-3.7/res/lnorm.o
+gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -fPIC -I/usr/local/lib/python3.7.1/include/python3.7m -c res/jacobi.c -o build/temp.linux-x86_64-3.7/res/jacobi.o
+gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -fPIC -I/usr/local/lib/python3.7.1/include/python3.7m -c res/spk.c -o build/temp.linux-x86_64-3.7/res/spk.o
+gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -fPIC -I/usr/local/lib/python3.7.1/include/python3.7m -c res/fit.c -o build/temp.linux-x86_64-3.7/res/fit.o
+gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -fPIC -I/usr/local/lib/python3.7.1/include/python3.7m -c res/eigenpap.c -o build/temp.linux-x86_64-3.7/res/eigenpap.o
+gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -fPIC -I/usr/local/lib/python3.7.1/include/python3.7m -c res/tools.c -o build/temp.linux-x86_64-3.7/res/tools.o
+creating build/lib.linux-x86_64-3.7
+gcc -pthread -shared -L/usr/local/lib/openssl-1.1.1a/lib -L/usr/local/lib/openssl-1.1.1a/lib build/temp.linux-x86_64-3.7/spkmeansmodule.o build/temp.linux-x86_64-3.7/res/wam.o build/temp.linux-x86_64-3.7/res/ddg.o build/temp.linux-x86_64-3.7/res/lnorm.o build/temp.linux-x86_64-3.7/res/jacobi.o build/temp.linux-x86_64-3.7/res/spk.o build/temp.linux-x86_64-3.7/res/fit.o build/temp.linux-x86_64-3.7/res/eigenpap.o build/temp.linux-x86_64-3.7/res/tools.o -o build/lib.linux-x86_64-3.7/spkmeans.cpython-37m-x86_64-linux-gnu.so
+copying build/lib.linux-x86_64-3.7/spkmeans.cpython-37m-x86_64-linux-gnu.so -> 

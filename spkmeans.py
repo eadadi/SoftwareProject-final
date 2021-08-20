@@ -109,6 +109,7 @@ def main():
             vectors_to_clusters_map = sp.kmeans(Rnk , initial_vectors, 1000)
             result = calcCentroidsBasedOnMap(data, vectors_to_clusters_map, clustersNumber) 
             result = {'initial_centroids_indexes':initial_indexes, 'final_centroids':result}
+            
     except ValueError:
         print("Invalid Input!")
         return
