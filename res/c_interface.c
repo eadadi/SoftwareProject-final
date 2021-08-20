@@ -4,6 +4,7 @@
 
 #ifndef C_ENUM_GOAL
 #define C_ENUM_GOAL
+
 enum goal { wam, ddg, lnorm, jacobi, spk };
 #endif
 char* __goal(enum goal e) {
@@ -74,6 +75,8 @@ int countCommas(char *a) {
 	while (a[i] != '\0') if (a[i++] == ',') ++cnt;
 	return cnt;
 }
+
+
 /*commaSplit returns NULL on failure*/
 double *commaSplit(char *line, int features) {
 	double * vector;
@@ -112,6 +115,8 @@ int getdata(FILE *f, double ***data, int *features_num) {
 	free(line);
 	return i;
 }
+
+
 /* returns 0 on failure */
 int getgoal(enum goal* e, char *candidate) {
 	if (cmpstr(candidate, "wam")) *e = wam;
@@ -122,6 +127,8 @@ int getgoal(enum goal* e, char *candidate) {
 	else return 0;
 	return 1;
 }
+
+
 int input(int argc, char*argv[], int *k, enum goal* e, double *** data, int *data_len, int *features_number) {
 	FILE *f;
 
@@ -133,6 +140,7 @@ int input(int argc, char*argv[], int *k, enum goal* e, double *** data, int *dat
 	f = fopen(argv[3], "r");
 
 	if (f == NULL) return 0;
+
 	if ((*data_len = getdata(f, data, features_number)) == -1) return 0;
 	fclose(f);
 	return 1;

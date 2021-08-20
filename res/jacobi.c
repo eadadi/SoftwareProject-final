@@ -9,44 +9,64 @@ static int parent_loc(int i) {
 	l = i / 2;
 	return l;
 }
+
+
 static double parent(matrice_max_heap *h, int i) {
 	int l;
 	l = parent_loc(i);
 	return h->values[l];
 }
+
+
 static int left_loc(int i) {
 	int l;
 	l = 2 * i;
 	return l;
 }
+
+
 static double left(matrice_max_heap *h, int i) {
 	int l;
 	l = left_loc(i);
 	return h->values[l];
 }
+
+
 static int right_loc(int i) {
 	int l;
 	l = 2 * i + 1;
 	return l;
 }
+
+
 static double right(matrice_max_heap *h, int i) {
 	int l;
 	l = right_loc(i);
 	return h->values[l];
 }
+
+
 static double key(matrice_max_heap *h, int i) {
 	return h->values[i];
 }
+
+
 static void set_key(matrice_max_heap *h, int i, double k) {
 	h->values[i] = k;
 }
+
+
 static void set_indexes(matrice_max_heap *h, int index, int i, int j) {
 	h->values_to_mat[index * HEAP_MEM] = i;
 	h->values_to_mat[index * HEAP_MEM + 1] = j;
 }
+
+
 static int heap_len(matrice_max_heap *h) {
 	return h->values_to_mat[0];
 }
+
+
 static void interswitch(matrice_max_heap *h, int i, int j) {
 	int j_ind0, j_ind1, i_ind0, i_ind1, tmp;
 	double j_k, i_k;
@@ -67,6 +87,8 @@ static void interswitch(matrice_max_heap *h, int i, int j) {
 	set_key(h, i, j_k);
 	set_indexes(h, i, j_ind0, j_ind1);
 }
+
+
 static void heapify_down(matrice_max_heap *h, int i) {
 	int l, r, max;
 	l = left_loc(i);
@@ -81,12 +103,16 @@ static void heapify_down(matrice_max_heap *h, int i) {
 		heapify_down(h, max);
 	}
 }
+
+
 static void heapify_up(matrice_max_heap *h, int i) {
 	while (i > 1 && key(h, i) > parent(h, i)) {
 		interswitch(h, i, parent_loc(i));
 		i = parent_loc(i);
 	}
 }
+
+
 static void heapify(matrice_max_heap *h) {
 	int i, l;
 	l = heap_len(h);
@@ -119,6 +145,8 @@ static void update_key(matrice_max_heap *h, int _ind, double v) {
 	}
 }
 /*return -1 on failure*/
+
+
 static int init_max_heap_from_matrice(matrice_max_heap *h, double **mat,
 	int **heap_locations_map, int n) {
 	int i, j, k, m;
@@ -157,6 +185,7 @@ static void free_heap(matrice_max_heap *h, int mat_dim) {
 	free(h->mat_to_values);
 }
 
+
 static void getPivotIndexes(double ** M, int n, int result[2]) {
 	int i, j, k, l;
 	double max, tmp;
@@ -173,6 +202,8 @@ static void getPivotIndexes(double ** M, int n, int result[2]) {
 		}
 	result[0] = i; result[1] = j;
 }
+
+
 static void calcCandS(double **M, int i, int j, double result[2]) {
 	double theta, t, c, s;
 	int thetaSign;
@@ -184,6 +215,8 @@ static void calcCandS(double **M, int i, int j, double result[2]) {
 	s = t * c;
 	result[0] = c; result[1] = s;
 }
+
+
 static double ** calcAtag(double ** A, int n, int i, int j, 
 	double c, double s, double *offAtag, matrice_max_heap *h) {
 	double c2, s2, aii, ajj, aij, ari, arj, **Atag, v1, v2;
@@ -220,6 +253,8 @@ static double ** calcAtag(double ** A, int n, int i, int j,
 
 	return Atag;
 }
+
+
 static void update_V_by_Pij(double ** V, int n, int i, int j, double c, double s) {
 	int r;
 	double Vri, Vrj;
@@ -230,6 +265,8 @@ static void update_V_by_Pij(double ** V, int n, int i, int j, double c, double s
 		V[r][j] = s * Vri + c * Vrj;
 	}
 }
+
+
 static double calcOffA(double ** A, int n) {
 	int i, j;
 	double offA = 0;
@@ -241,6 +278,8 @@ static double calcOffA(double ** A, int n) {
 	}
 	return offA;
 }
+
+
 static double*** calcJacobi(double **A, int n) {
 	double **Atag, **V, ***result;
 	int iter, i, j, pivotIndexes[2], flag;

@@ -38,6 +38,8 @@ static int determineK(value_vector_map *map, int n) {
 
 	return k+1;
 }
+
+
 static value_vector_map* setMap(double ** eigenvectors, double * eigenvalues, int n) {
 	int i;
 	value_vector_map * map;

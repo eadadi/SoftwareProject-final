@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "tools.c"
+
 static double ** calcWAM(double ** vectors, int n, int vectorDimension) {
 	int i, j, d;
 	double ** Matrice;

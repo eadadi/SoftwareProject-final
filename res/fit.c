@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "tools.c"
+
 static void add_u_to_v(double *u, double *v, int dim) {
 	int i;
 	for (i = 0; i < dim; ++i) {
