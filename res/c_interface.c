@@ -1,12 +1,7 @@
-#include "value_vector_map_struct.h"
+#include "../spkmeans.h"
 #define NORMAL_LENGTH 10
 #define MAX_NUM_OF_POINTS 1000
 
-#ifndef C_ENUM_GOAL
-#define C_ENUM_GOAL
-
-enum goal { wam, ddg, lnorm, jacobi, spk };
-#endif
 char* __goal(enum goal e) {
 	switch (e)
 	{

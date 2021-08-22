@@ -106,7 +106,7 @@ def main():
             #print("strting choose initials...")
             initial_indexes,initial_vectors = kmeanspp(numpyData,clustersNumber)
             #print("going back to c....")
-            vectors_to_clusters_map = sp.kmeans(Rnk , initial_vectors, 1000)
+            vectors_to_clusters_map = sp.kmeans(Rnk , initial_vectors, 300)
             result = calcCentroidsBasedOnMap(data, vectors_to_clusters_map, clustersNumber) 
             result = {'initial_centroids_indexes':initial_indexes, 'final_centroids':result}
             
@@ -122,6 +122,14 @@ def main():
             b = result['final_centroids']
             print(','.join(a))
             for x in b:
+                x0 = ['%.4f'%y for y in x]
+                print(','.join(x0))
+        elif goal == goalEnum.jacobi:
+            evalues = result[0]
+            evectors = result[1]
+            x0 = ['%.4f'%y for y in evalues]
+            print(','.join(x0))
+            for x in evectors:
                 x0 = ['%.4f'%y for y in x]
                 print(','.join(x0))
         else:

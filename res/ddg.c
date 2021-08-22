@@ -1,5 +1,5 @@
-#include <stdlib.h>
-static double **calcDDG(double ** M, int n) {
+#include "../spkmeans.h"
+double **calcDDG(double ** M, int n) {
 	double ** Matrice, dii;
 	int i, j;
 	Matrice = (double**)calloc(n, sizeof(double*));

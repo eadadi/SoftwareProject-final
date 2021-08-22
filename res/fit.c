@@ -1,14 +1,13 @@
-#include <stdlib.h>
-#include "tools.c"
+#include "../spkmeans.h"
 
-static void add_u_to_v(double *u, double *v, int dim) {
+void add_u_to_v(double *u, double *v, int dim) {
 	int i;
 	for (i = 0; i < dim; ++i) {
 		v[i] += u[i];
 	}
 }
 
-static int updateCentroids(double **datapoints, double **centroids,
+int updateCentroids(double **datapoints, double **centroids,
 	int datapoints_amount, int clusters_amount, int *data_to_centroids_map, int datapoint_length) {
 	double **new_centroids;
 	int *amounts, i, j, flag;
@@ -46,7 +45,7 @@ static int updateCentroids(double **datapoints, double **centroids,
 	return flag;
 }
 
-static int getClosestCluster(double *candidate, double**centroids, int clusters_amount,
+int getClosestCluster(double *candidate, double**centroids, int clusters_amount,
 	int datapoint_length) {
 	int i, index;
 	double min, tmp;
@@ -62,7 +61,7 @@ static int getClosestCluster(double *candidate, double**centroids, int clusters_
 	return index;
 }
 
-static int* k_mean(double **datapoints, double **centroids, int datapoints_amount,
+int* k_mean(double **datapoints, double **centroids, int datapoints_amount,
 	int clusters_amount, int datapoint_length, int max_iter) {
 	int *data_to_centroids_map, iter, i, closest_cluster, flag;
 	flag = 1; iter = 0;

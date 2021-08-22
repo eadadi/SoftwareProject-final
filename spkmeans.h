@@ -1,6 +1,7 @@
 #ifndef SPKMEANS_H
 #define SPKMEANS_H
 
+#include "res/definitions.h"
 /*
 -------------spkmeansmodule.c sources:
 */
@@ -8,84 +9,83 @@
 /*
 -----tools.c headers
 */
-static double distance(double *v, double *u, int vectorDimension);
-static void Transpoze(double ** V, int n);
-static void printArr(double ** A, int n, int m);
+double distance(double *v, double *u, int vectorDimension);
 
-/*
------value_vector_map_struct definition:
-*/
-#ifndef VALUE_VECTOR_STRUCT
-#define VALUE_VECTOR_STRUCT
-typedef struct value_vector_map {
-	double **eigenvector;
-	double *eigenvalue;
-	int index;
-}value_vector_map;
-#endif
+
 
 /*
 -----wam.c, ddg.c headers
 */
-static double ** calcWAM(double ** vectors, int n, int vectorDimension);
-static double **calcDDG(double ** M, int n);
+double ** calcWAM(double ** vectors, int n, int vectorDimension);
+double **calcDDG(double ** M, int n);
 
 /*
 -----lnorm.c headers
 */
-static void raise_D_diagonal_in_minus_half(double **D, int n);
-static double ** left_multip_of_diagonal_matrice(double ** D, double **M, int n);
-static double ** right_multip_of_diagonal_matrice(double ** M, double **D, int n);
-static double ** calcNGL(double ** W, double ** D, int n);
+void raise_D_diagonal_in_minus_half(double **D, int n);
+double ** left_multip_of_diagonal_matrice(double ** D, double **M, int n);
+double ** right_multip_of_diagonal_matrice(double ** M, double **D, int n);
+double ** calcNGL(double ** W, double ** D, int n);
+
+/*
+-----matrice_max_heap.c headers
+*/
+
+int parent_loc(int);
+double parent(matrice_max_heap*, int);
+int left_loc(int i);
+double left(matrice_max_heap*, int);
+int right_loc(int i);
+double right(matrice_max_heap*, int);
+double key(matrice_max_heap*, int);
+void set_key(matrice_max_heap*, int, double);
+void set_indexes(matrice_max_heap*, int, int, int);
+int heap_len(matrice_max_heap*);
+void interswitch(matrice_max_heap*, int, int);
+void heapify_down(matrice_max_heap*, int);
+void heapify_up(matrice_max_heap*, int);
+void heapify(matrice_max_heap*);
+void heap_max(matrice_max_heap*, int[2]);
+void update_key(matrice_max_heap*, int, double);
+int init_max_heap_from_matrice(matrice_max_heap*, double **, int **, int);
+void free_heap(matrice_max_heap*, int);
 
 /*
 -----jacobi.c headers
 */
-#ifndef JACOBI_CONSTANTS
-#define JACOBI_CONSTANTS
-#define EPSILON 0.0001
-#define JACOBI_MAX_ITERATIONS_NUMBER 10000
-#define HEAP_MEM 2
-#endif 
-#ifndef MATRICE_MAX_HEAP
-#define MATRICE_MAX_HEAP
-typedef struct matrice_max_heap {
-	double * values;
-	int **mat_to_values;
-	int *values_to_mat;
-}matrice_max_heap;
-#endif 
 
-static void getPivotIndexes(double ** M, int n, int[2]);
-static void calcCandS(double **M, int i, int j, double[2]);
-static double ** calcAtag(double ** A, int n, int i, int j, double c, 
+/*static void getPivotIndexes(double ** M, int n, int[2]);*/
+void calcCandS(double **M, int i, int j, double[2]);
+double ** calcAtag(double ** A, int n, int i, int j, double c, 
 	double s, double *offAtag, matrice_max_heap *h);
-static void update_V_by_Pij(double ** V, int n, int i, int j, double c, double s);
-static double calcOffA(double ** A, int n);
-static double*** calcJacobi(double **A, int n);
+void update_V_by_Pij(double ** V, int n, int i, int j, double c, double s);
+double calcOffA(double ** A, int n);
+void Transpoze(double ** V, int n);
+double*** calcJacobi(double **A, int n);
 
 /*
 -----eigenpap.c headers
 */
-static int cmpfunc(const void *a, const void *b);
-static void sortMap(value_vector_map *map, int n);
-static int determineK(value_vector_map *map, int n);
-static value_vector_map* setMap(double ** eigenvectors, double * eigenvalues, int n);
+int cmpfunc(const void *a, const void *b);
+void sortMap(value_vector_map *map, int n);
+int determineK(value_vector_map *map, int n);
+value_vector_map* setMap(double ** eigenvectors, double * eigenvalues, int n);
 
 /*
 -----fit.c headers
 */
-static void add_u_to_v(double *u, double *v, int dim);
-static int updateCentroids(double **datapoints, double **centroids,
+void add_u_to_v(double *u, double *v, int dim);
+int updateCentroids(double **datapoints, double **centroids,
 	int datapoints_amount, int clusters_amount, int *data_to_centroids_map, int datapoint_length);
-static int getClosestCluster(double *candidate, double**centroids, int clusters_amount,
+int getClosestCluster(double *candidate, double**centroids, int clusters_amount,
 	int datapoint_length);
-static int* k_mean(double **datapoints, double **centroids, int datapoints_amount,
+int* k_mean(double **datapoints, double **centroids, int datapoints_amount,
 	int clusters_amount, int datapoint_length, int max_iter);
 /*
 -----spk.c headers
 */
-static double ** calcNormalaizedRnk(value_vector_map *map, int n, int clustersNumber);
+double ** calcNormalaizedRnk(value_vector_map *map, int n, int clustersNumber);
+void printArr(double ** A, int n, int m);
 
 
 /*
@@ -93,11 +93,6 @@ static double ** calcNormalaizedRnk(value_vector_map *map, int n, int clustersNu
 */
 double **extractCentroids(double **data, int k);
 double ** calcFinalCentroids(double **data, int *map, int k, int data_length, int data_dim);
-
-#ifndef C_ENUM_GOAL
-#define C_ENUM_GOAL
-enum goal { wam, ddg, lnorm, jacobi, spk };
-#endif
 
 char* __goal(enum goal e);
 int cmpstr(char * a, char *b);

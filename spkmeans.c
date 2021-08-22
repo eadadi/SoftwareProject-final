@@ -1,8 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "math.h"
 #include "spkmeans.h"
-#include "res/value_vector_map_struct.h"
+
 #include "res/tools.c"
 #include "res/wam.c"
 #include "res/ddg.c"
@@ -12,6 +9,16 @@
 #include "res/eigenpap.c"
 #include "res/fit.c"
 #include "res/c_interface.c"
+
+void printArr(double ** A, int n, int m) {
+	int i, j;
+	for (i = 0; i < n; ++i) {
+		for (j = 0; j < m; ++j) {
+			printf("%.4f", A[i][j]);
+			j + 1 == m ? printf("\n") : printf(",");
+		}
+	}
+}
 
 int main(int argc, char *argv[]) {
 	int i, k, data_length, features, *original_to_Rnk_map, error;
@@ -67,8 +74,8 @@ int main(int argc, char *argv[]) {
 		if (_jacobi == NULL) { error = 1; break; }
 		eigenvalues = _jacobi[0][0];
 		eigenvectors = _jacobi[1];
-		/*printArr(&eigenvalues, 1, data_length);*/
 		printArr(eigenvectors, data_length, data_length);
+		printArr(&eigenvalues, 1, data_length);
 		break;
 	case spk:
 		_wam = calcWAM(data, data_length, features);

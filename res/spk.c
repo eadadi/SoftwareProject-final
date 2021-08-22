@@ -1,7 +1,5 @@
-#include<stdlib.h>
-#include "value_vector_map_struct.h"
-#include "tools.c"
-static double ** calcNormalaizedRnk(value_vector_map *map, int n, int clustersNumber) {
+#include "../spkmeans.h"
+double ** calcNormalaizedRnk(value_vector_map *map, int n, int clustersNumber) {
 	double **Rnk, dist, *zero;
 	int i, j;
 	Rnk = (double**)malloc(n * sizeof(double*));

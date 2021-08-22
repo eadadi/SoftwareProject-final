@@ -1,7 +1,6 @@
-#include <stdlib.h>
-#include "tools.c"
+#include "../spkmeans.h"
 
-static double ** calcWAM(double ** vectors, int n, int vectorDimension) {
+double ** calcWAM(double ** vectors, int n, int vectorDimension) {
 	int i, j, d;
 	double ** Matrice;
 	Matrice = (double**)malloc(n * sizeof(double*));

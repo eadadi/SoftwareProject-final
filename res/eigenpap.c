@@ -1,8 +1,6 @@
-#include <stdlib.h>
-#include "value_vector_map_struct.h"
+#include "../spkmeans.h"
 
-
-static int cmpfunc(const void *a, const void *b) {
+int cmpfunc(const void *a, const void *b) {
 
 	if (*((value_vector_map*)a)->eigenvalue > *((value_vector_map*)b)->eigenvalue)
 		return 1;
@@ -13,11 +11,11 @@ static int cmpfunc(const void *a, const void *b) {
 	else return -1;
 }
 
-static void sortMap(value_vector_map *map, int n) {
+void sortMap(value_vector_map *map, int n) {
 	qsort(map, n, sizeof(value_vector_map), cmpfunc);
 }
 
-static int determineK(value_vector_map *map, int n) {
+int determineK(value_vector_map *map, int n) {
 	int i, N, k;
 	double max;
 	double lambda_i, lambda_ipp;
@@ -40,7 +38,7 @@ static int determineK(value_vector_map *map, int n) {
 }
 
 
-static value_vector_map* setMap(double ** eigenvectors, double * eigenvalues, int n) {
+value_vector_map* setMap(double ** eigenvectors, double * eigenvalues, int n) {
 	int i;
 	value_vector_map * map;
 	map = (value_vector_map*)calloc(n, sizeof(value_vector_map));

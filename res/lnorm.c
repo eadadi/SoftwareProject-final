@@ -1,9 +1,9 @@
-#include <stdlib.h>
-static void raise_D_diagonal_in_minus_half(double **D, int n) {
+#include "../spkmeans.h"
+void raise_D_diagonal_in_minus_half(double **D, int n) {
 	int i;
 	for (i = 0; i < n; ++i) D[i][i] = pow(D[i][i], -0.5);
 }
-static double ** left_multip_of_diagonal_matrice(double ** D, double **M, int n) {
+double ** left_multip_of_diagonal_matrice(double ** D, double **M, int n) {
 	int i, j;
 	double **result;
 	result = (double**)malloc(n * sizeof(double*));
@@ -19,7 +19,7 @@ static double ** left_multip_of_diagonal_matrice(double ** D, double **M, int n)
 	}
 	return result;
 }
-static double ** right_multip_of_diagonal_matrice(double ** M, double **D, int n) {
+double ** right_multip_of_diagonal_matrice(double ** M, double **D, int n) {
 	int i, j;
 	double **result;
 	result = (double**)malloc(n * sizeof(double*));
@@ -36,7 +36,7 @@ static double ** right_multip_of_diagonal_matrice(double ** M, double **D, int n
 	return result;
 }
 /* Normalized Graph Laplacian */
-static double ** calcNGL(double ** W, double ** D, int n) { 
+double ** calcNGL(double ** W, double ** D, int n) { 
 	int i, j;
 	double ** result, **tmp;
 	raise_D_diagonal_in_minus_half(D, n);

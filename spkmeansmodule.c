@@ -1,19 +1,37 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
-
-#include "res/value_vector_map_struct.h"
-#include"res/tools.c"
 #include "spkmeans.h"
-#include "res/wam.c"
-#include "res/ddg.c"
-#include "res/lnorm.c"
-#include "res/jacobi.c"
-#include "res/eigenpap.c"
-#include "res/spk.c"
-#include "res/fit.c"
+
 /*
 
 */
+
+static double ** static_py_calcWAM(double ** vectors, int n, int vectorDimension) {
+	return calcWAM(vectors, n, vectorDimension);
+}
+static double **static_py_calcDDG(double ** M, int n) {
+	return calcDDG(M, n);
+}
+static double ** static_py_calcNGL(double ** W, double ** D, int n) {
+	return calcNGL(W, D, n);
+}
+static double*** static_py_calcJacobi(double **A, int n) {
+	return calcJacobi(A, n);
+}
+static value_vector_map* static_py_setMap(double ** eigenvectors, double * eigenvalues, int n) {
+	return setMap(eigenvectors, eigenvalues, n);
+}
+static int static_py_determineK(value_vector_map *map, int n) {
+	return determineK(map, n);
+}
+static double ** static_py_calcNormalaizedRnk(value_vector_map *map, int n, int clustersNumber) {
+	return calcNormalaizedRnk(map, n, clustersNumber);
+}
+int* static_py_k_mean(double **datapoints, double **centroids, int datapoints_amount,
+	int clusters_amount, int datapoint_length, int max_iter) {
+	return  k_mean(datapoints, centroids, datapoints_amount,	
+				clusters_amount, datapoint_length, max_iter);
+}
 
 static int EasyArgParse(PyObject *args, double ***Vectors, int *num_of_vectors, int *vectorDim, int *k_argument) {
 	int n, vectorDimension, k, l;
@@ -121,7 +139,7 @@ static PyObject* c_wam(PyObject *self, PyObject *args) {
 	if (EasyArgParse(args, &vectors, &n, &vectorDimension, NULL) == 0) return NULL;
 	_n = PyLong_AsSize_t(Py_BuildValue("l", n));
 	// Computation
-	WAM = calcWAM(vectors, n, vectorDimension);
+	WAM = static_py_calcWAM(vectors, n, vectorDimension);
 	
 	//Parsing to Python
 	_WAM = PyList_New(_n);
@@ -155,9 +173,9 @@ static PyObject* c_ddg(PyObject *self, PyObject *args) {
 	if (EasyArgParse(args, &vectors, &n, &vectorDimension, NULL) == 0) return NULL;
 	_n = PyLong_AsSize_t(Py_BuildValue("l", n));
 	// Computation
-	WAM = calcWAM(vectors, n, vectorDimension);
+	WAM = static_py_calcWAM(vectors, n, vectorDimension);
 	if (WAM == NULL) return NULL;
-	DDG = calcDDG(WAM, n);
+	DDG = static_py_calcDDG(WAM, n);
 	if (DDG == NULL) return NULL;
 	//Parsing to Python
 	_DDG = PyList_New(_n);
@@ -193,11 +211,11 @@ static PyObject* c_lnorm(PyObject *self, PyObject *args) {
 	if (EasyArgParse(args, &vectors, &n, &vectorDimension, NULL) == 0) return NULL;
 	_n = PyLong_AsSize_t(Py_BuildValue("l", n));
 	// Computation
-	WAM = calcWAM(vectors, n, vectorDimension);
+	WAM = static_py_calcWAM(vectors, n, vectorDimension);
 	if (WAM == NULL) return NULL;
-	DDG = calcDDG(WAM, n);
+	DDG = static_py_calcDDG(WAM, n);
 	if (DDG == NULL) return NULL;
-	NGL = calcNGL(WAM, DDG, n);
+	NGL = static_py_calcNGL(WAM, DDG, n);
 	if (NGL == NULL) return NULL;
 
 	//Parsing to Python
@@ -241,7 +259,7 @@ static PyObject* c_jacobi(PyObject *self, PyObject *args) {
 	*Note that in this case vectors dimension is 'n' because we got n*n Matrice
 	*/
 	// Computation
-	JACOBI = calcJacobi(vectors,n);
+	JACOBI = static_py_calcJacobi(vectors,n);
 	if (JACOBI == NULL) return NULL;
 	eigenvalues = JACOBI[0][0];
 	eigenvectors = JACOBI[1];
@@ -297,15 +315,15 @@ static PyObject* c_spk(PyObject *self, PyObject *args) {
 	_n = PyLong_AsSize_t(Py_BuildValue("l", n));
 	
 	// Computation
-	WAM = calcWAM(vectors, n, vectorDimension);
+	WAM = static_py_calcWAM(vectors, n, vectorDimension);
 	if (WAM == NULL) return NULL;
 	//Freeing vectors
 	for (k = 0; k < n; ++k) free(vectors[k]);
 	free(vectors);
 
-	DDG = calcDDG(WAM, n);
+	DDG = static_py_calcDDG(WAM, n);
 	if (DDG == NULL) return NULL;
-	NGL = calcNGL(WAM, DDG, n);
+	NGL = static_py_calcNGL(WAM, DDG, n);
 	if (NGL == NULL) return NULL;
 	//Freeing DDG
 	for (k = 0; k < n; ++k) free(DDG[k]);
@@ -314,18 +332,18 @@ static PyObject* c_spk(PyObject *self, PyObject *args) {
 	for (k = 0; k < n; ++k) free(WAM[k]);
 	free(WAM);
 
-	JACOBI = calcJacobi(NGL, n);
+	JACOBI = static_py_calcJacobi(NGL, n);
 	if (JACOBI == NULL) return NULL;
 	eigenvalues = JACOBI[0][0];
 	eigenvectors = JACOBI[1];
 
-	vvmap = setMap(eigenvectors, eigenvalues, n);
+	vvmap = static_py_setMap(eigenvectors, eigenvalues, n);
 	if (vvmap == NULL) return NULL;
 
-	if (clustersNumber == 0) clustersNumber = determineK(vvmap, n);
+	if (clustersNumber == 0) clustersNumber = static_py_determineK(vvmap, n);
 	_clusterNumber = PyLong_AsSize_t(Py_BuildValue("l", clustersNumber));
 
-	RNK = calcNormalaizedRnk(vvmap, n, clustersNumber);
+	RNK = static_py_calcNormalaizedRnk(vvmap, n, clustersNumber);
 	if (RNK == NULL) return NULL;
 	
 	//Parsing RNK to Python
@@ -374,18 +392,15 @@ static PyObject* c_kmeans(PyObject *self, PyObject *args) {
 	double **datapoints, **centroids;
 	succ = kmeans_EasyArgParse(args, &datapoints, &centroids, &datapoints_amount,
 		&clusters_amount, &datapoint_length, &max_iter);
-	Py_ssize_t i, k, _clustersAmount, _datapointsAmount, _datapointLength;
+	Py_ssize_t i, _datapointsAmount;
 	if (succ == 0) return NULL;
 	
 	_datapointsAmount = PyLong_AsSize_t(Py_BuildValue("n",datapoints_amount));
-	_clustersAmount = PyLong_AsSize_t(Py_BuildValue("n", clusters_amount));
-	_datapointLength = PyLong_AsSize_t(Py_BuildValue("n", datapoint_length));
 
-
-	map = k_mean(datapoints, centroids, datapoints_amount, clusters_amount, datapoint_length, max_iter);
+	map = static_py_k_mean(datapoints, centroids, datapoints_amount,
+		clusters_amount, datapoint_length, max_iter);
 
 	//Parsing to Python
-	k = 1;
 	_MAP = PyList_New(_datapointsAmount);
 	if (!PyList_Check(_MAP)) return NULL;
 	for (i = 0; i < _datapointsAmount; ++i) {

@@ -1,5 +1,0 @@
-gcc -ansi -Wall -Wextra -Werror -pedantic-errors spkmeans.c -lm -o spkmeans
-
-python setup.py build_ext --inplace > build_txt.txt
-
-python3 tester.py 
