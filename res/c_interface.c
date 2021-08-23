@@ -42,25 +42,21 @@ void copyAtoB(char *A, char *B) {
 }
 /*freadline returns -1 on failure*/
 int freadline(char **a, FILE *f) {
-	char * tmp, ch, *backup;
+	char * tmp, ch;
 	int i, curr_len = NORMAL_LENGTH;
 	tmp = (char*)malloc(curr_len * sizeof(char));
 	if (tmp == NULL) return -1;
 	i = 0;
 	while ((ch = fgetc(f)) != '\n' && ch != EOF) {
 		tmp[i] = ch;
-		if (i + 2 == curr_len) {
-			tmp[i + 1] = '\0';
+		if (i + 1 == curr_len) {
 			curr_len *= 2;
-			backup = (char*)malloc(curr_len * sizeof(char));
-			if (backup == NULL) return -1;
-			copyAtoB(tmp, backup);
-			free(tmp);
-			tmp = backup;
+			tmp = realloc(tmp, curr_len * sizeof(char));
 		}
 		++i;
 	}
 	tmp[i] = '\0';
+	tmp = realloc(tmp, i);
 	*a = tmp;
 	return i;
 }
@@ -99,7 +95,7 @@ int getdata(FILE *f, double ***data, int *features_num) {
 	if (len == -1) return -1;
 	*features_num = countCommas(line) + 1;
 	i = 0;
-	while (line[0] != '\0') {
+	while (line!=NULL && line[0] != '\0') {
 		vector = commaSplit(line, *features_num);
 		if (vector == NULL) return -1;
 		(*data)[i] = vector;
@@ -108,7 +104,8 @@ int getdata(FILE *f, double ***data, int *features_num) {
 		++i;
 	}
 	free(line);
-	return i;
+	*data = realloc(*data, (i-1) * sizeof(double*));
+	return i-1;
 }
 
 

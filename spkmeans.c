@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
 		data = _wam = _ddg = _lnorm = _Rnk = NULL;
 	_jacobi = NULL;
 	original_to_Rnk_map = NULL;
+	vvmap = NULL;
 
 	if (!input(argc, argv, &k, &e, &data, &data_length, &features)) {
 		printf("Invalid Input!\n");
