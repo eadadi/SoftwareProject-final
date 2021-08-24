@@ -22,11 +22,13 @@ sk = 1
 C = 3
 output = 0
 compile_first = 0
-nova = 0
+if os.name =='nt':
+    nova = 0
+else:
+    nova = 1
 rand = 0
+sort_results = 0
 if len(argv)>1:
-    if "-nova" in argv:
-        nova = 1
     if "-compile" in argv:
         compile_first = 1
     if "-just_compile" in argv:
@@ -51,6 +53,12 @@ if len(argv)>1:
         p2 = 3
     if "-4d" in argv:
         p2 = 4
+    if "-5d" in argv:
+        p2 = 5
+    if "-6d" in argv:
+        p2 = 6
+    if "-7d" in argv:
+        p2 = 7
     if "-1000pts" in argv:
         p1 = 1000
     if "-750pts" in argv:
@@ -72,6 +80,8 @@ if len(argv)>1:
     if "-not_random" in argv:
         rand = 1
         np.random.seed(0)
+    if "-sort_results" in argv:
+        sort_results = 1
 sk = C
 def test():
     t0 = 'ea15'
@@ -144,6 +154,8 @@ def test():
         py_time = p_t_e-p_t_s
 
         scikit_kmeans = pd.DataFrame(KMeans(n_clusters =sk).fit(data).cluster_centers_)
+        if sort_results == 1:
+            scikit_kmeans = scikit_kmeans.sort_values(by=0)
         print("scikit_kmeans outputs:")
         print(scikit_kmeans)
         print()
@@ -153,8 +165,9 @@ def test():
         df3 = pd.read_csv(os.path.join(t0,"out_py_"+n+t2), skiprows=[0], header=None)
         df4 = pd.read_csv(os.path.join(t0,"true_"+n+t2), header = None)
         if output == 1 or p2>2:
-            df2 = df2.sort_values(by=0)
-            df3 = df3.sort_values(by=0)
+            if sort_results == 1:
+                df2 = df2.sort_values(by=0)
+                df3 = df3.sort_values(by=0)
             print("c outputs:")
             print(df2)
             print(f'runtime: {c_time:.3f}\n')
