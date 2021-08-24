@@ -85,7 +85,6 @@ if len(argv)>1:
         np.random.seed(0)
     if "-sort_results" in argv:
         sort_results = 1
-sk = C
 def test():
     if h == 1:
         print("(order of different flags does not matter)")

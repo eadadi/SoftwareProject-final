@@ -104,8 +104,8 @@ int getdata(FILE *f, double ***data, int *features_num) {
 		++i;
 	}
 	free(line);
-	*data = realloc(*data, (i-1) * sizeof(double*));
-	return i-1;
+	*data = realloc(*data, (i) * sizeof(double*));
+	return i;
 }
 
 

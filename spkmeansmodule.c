@@ -2,7 +2,6 @@
 #include <Python.h>
 #include "spkmeans.h"
 
-
 static double ** static_py_calcWAM(double ** vectors, int n, int vectorDimension) {
 	return calcWAM(vectors, n, vectorDimension);
 }
