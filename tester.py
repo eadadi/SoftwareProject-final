@@ -28,7 +28,10 @@ else:
     nova = 1
 rand = 0
 sort_results = 0
+h = 0
 if len(argv)>1:
+    if "-h" in argv:
+        h = 1
     if "-compile" in argv:
         compile_first = 1
     if "-just_compile" in argv:
@@ -84,6 +87,21 @@ if len(argv)>1:
         sort_results = 1
 sk = C
 def test():
+    if h == 1:
+        print("(order of different flags does not matter)")
+        print("available options")
+        print(" -h shows this message")
+        print(" -{x}pts is data length (250,500,750,1000)")
+        print(" -{x}C is number of true centers (2-5)")
+        print(" -{x}d is feature dimensions (2-7)")
+        print(" -print (results to cmd)")
+        print(" -sort_results to sort printed results by first index")
+        print(" -r to remove files after execution")
+        print(" -not_random")
+        print(" -compile")
+        print(" -just_compile to exit after compilation")
+        return
+
     t0 = 'ea15'
     t1 = "spkmeans.py"
     t10 = "spkmeans"
