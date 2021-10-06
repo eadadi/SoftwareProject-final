@@ -1,6 +1,5 @@
 #ifndef SPKMEANS_H
 #define SPKMEANS_H
-
 #include "res/definitions.h"
 /*
 -------------spkmeansmodule.c sources:
